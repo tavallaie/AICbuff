@@ -40,7 +40,7 @@ class _Parser:
 		self.players = None
 	def parse(self, f):
 		writer = csv.writer(f, delimiter=',')
-		writer.writerow([''])
+		writer.writerow(['index', 'game_name', 'player', 'hero_ID', 'hero_name', 'turn', 'phase', 'action', 'action_AP', 'ability', 'ability_cast', 'ability_target', 'current_HP', 'current_location', 'move_action', 'targeted_by', 'score', 'obj_zone', 'cooldown_per_ability', 'target_location', 'ability_location', 'is_lobbing', 'is_piercing', 'area_effect', 'is_wall', 'is_in_respawn_zone', 'game_type'])
 		for i in range(2, len(data)):
 			row = data[i]
 			writer.writerow([])
