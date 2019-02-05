@@ -29,12 +29,36 @@ class total:
 					self.current_location = find_location(row['players'][j]['heroes'],self.caster_hero_id)
 					self.is_lobbing = find_ability_property(data[0]['abilityConstants'],self.ability)[1]
 					self.is_piercing = find_ability_property(data[0]['abilityConstants'],self.ability)[2]
-					self.ability_target = find_ability_target()
-					writer.writerow([])
+					self.ability_target = find_ability_target(self.AOE,self.ability_location,row['players'][(j+1)%2]['heroes'])
 
-def find_ability_target():#TODO
-	pass
+def find_ability_target(AOE,location,data):
+	row = location['row']
+	col = location['column']
+	col -= AOE
+	heroes = []
+	i = 0
+	while(True):
+		for j in range(i*(-1),i+1):
+			if row+j <=31 and row+j>0:
+				x = find_hero_from_cell(row+j,col,data)
+				if x != None:
+					heroes.append(x)
+		col += 1
+		if col>location['column']+AOE:
+			break
+		else:
+			if i>=AOE:
+				i-=1
+			else:
+				i+=1
+	return heroes
 
+
+def find_hero_from_cell(i,j,data):
+	for hero in data:
+		if hero['currentCell']['row'] == i and hero['currentCell']['column']==j:
+			return hero
+	return None
 
 def find_ability_property(abilities,name):
 	for ability in abilities:
