@@ -7,7 +7,24 @@ class total:
 		pass
 	def parse(self,f):
 		writer = csv.writer(f, delimiter=',')
-		writer.writerow(['index', 'game_name', 'player', 'hero_ID', 'hero_name', 'turn', 'phase', 'action', 'action_AP', 'ability', 'ability_cast', 'ability_target', 'current_HP', 'current_location', 'move_action', 'targeted_by', 'score', 'obj_zone', 'cooldown_per_ability', 'target_location', 'ability_location', 'is_lobbing', 'is_piercing', 'area_effect', 'is_wall', 'is_in_respawn_zone', 'game_type'])
+		writer.writerow(['index',
+						 'game_name',
+						 'player',
+						 'hero_ID',
+						 'hero_name',
+						 'turn',
+						 'phase',
+						 'ability',
+						 'ability_cast',
+						 'ability_target',
+						 'current_HP',
+						 'current_location',
+						 'score',
+						 'ability_location',
+						 'is_lobbing',
+						 'is_piercing',
+						 'area_effect'])
+		#TODO game_type, action, action_ap, move_action, targeted_by, cooldown_per_ability, obj_zone, target_location, is_wall, is_in_respawn_zone
 		for i in range(2, len(data)):
 			row = data[i]
 			self.index = i
@@ -29,7 +46,25 @@ class total:
 				self.is_lobbing = find_ability_property(data[0]['abilityConstants'],self.ability)[1]
 				self.is_piercing = find_ability_property(data[0]['abilityConstants'],self.ability)[2]
 				self.ability_target = find_ability_target(self.AOE,self.ability_location,row['players'][self.caster_hero_id%2]['heroes'])
-				writer.writerow([])#TODO should be fell with proper elements
+				writer.writerow([
+					self.index,
+					self.game_name,
+					self.player,
+					self.caster_hero_id,
+					self.hero_name,
+					self.turn,
+					self.phase,
+					self.ability,
+					self.ability_cost,#thisone
+					self.ability_target,
+					self.current_hp,
+					self.current_location,
+					self.score,
+					self.ability_location,
+					self.is_lobbing,
+					self.is_piercing,
+					self.AOE
+				])
 
 def find_ability_target(AOE,location,data):
 	row = location['row']
