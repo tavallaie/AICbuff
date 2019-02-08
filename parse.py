@@ -31,40 +31,69 @@ class total:
 			self.game_name = "game"
 			self.turn = row['currentTurn']
 			self.phase = row['currentPhase']
-			for hero in row['castAbilities']:
-				self.ability = hero["abilityName"]
-				self.AOE = find_ability_property(data[0]['abilityConstants'],self.ability)[0]
-				self.ability_cost = find_ability_property(data[0]['abilityConstants'],self.ability)[3]
-				#TODO underStanding what it is
-				self.ability_location = hero['endCell']
-				self.caster_hero_id = hero['casterId']
-				self.player = (self.caster_hero_id%2 +1)
-				self.score = row['players'][self.caster_hero_id%2]['score']
-				self.hero_name = find_hero_name(data[1]['heroes'][self.caster_hero_id%2],self.caster_hero_id)
-				self.current_hp = find_hp(row['players'][self.caster_hero_id%2]['heroes'],self.caster_hero_id)
-				self.current_location = find_location(row['players'][self.caster_hero_id%2]['heroes'],self.caster_hero_id)
-				self.is_lobbing = find_ability_property(data[0]['abilityConstants'],self.ability)[1]
-				self.is_piercing = find_ability_property(data[0]['abilityConstants'],self.ability)[2]
-				self.ability_target = find_ability_target(self.AOE,self.ability_location,row['players'][self.caster_hero_id%2]['heroes'])
-				writer.writerow([
-					self.index,
-					self.game_name,
-					self.player,
-					self.caster_hero_id,
-					self.hero_name,
-					self.turn,
-					self.phase,
-					self.ability,
-					self.ability_cost,#thisone
-					self.ability_target,
-					self.current_hp,
-					self.current_location,
-					self.score,
-					self.ability_location,
-					self.is_lobbing,
-					self.is_piercing,
-					self.AOE
-				])
+			if self.phase == 'ACTION':
+				for hero in row['castAbilities']:
+					self.ability = hero["abilityName"]
+					self.AOE = find_ability_property(data[0]['abilityConstants'],self.ability)[0]
+					self.ability_cost = find_ability_property(data[0]['abilityConstants'],self.ability)[3]
+					#TODO underStanding what it is
+					self.ability_location = hero['endCell']
+					self.caster_hero_id = hero['casterId']
+					self.player = (self.caster_hero_id%2 +1)
+					self.score = row['players'][self.caster_hero_id%2]['score']
+					self.hero_name = find_hero_name(data[1]['heroes'][self.caster_hero_id%2],self.caster_hero_id)
+					self.current_hp = find_hp(row['players'][self.caster_hero_id%2]['heroes'],self.caster_hero_id)
+					self.current_location = find_location(row['players'][self.caster_hero_id%2]['heroes'],self.caster_hero_id)
+					self.is_lobbing = find_ability_property(data[0]['abilityConstants'],self.ability)[1]
+					self.is_piercing = find_ability_property(data[0]['abilityConstants'],self.ability)[2]
+					self.ability_target = find_ability_target(self.AOE,self.ability_location,row['players'][self.caster_hero_id%2]['heroes'])
+					writer.writerow([
+						self.index,
+						self.game_name,
+						self.player,
+						self.caster_hero_id,
+						self.hero_name,
+						self.turn,
+						self.phase,
+						self.ability,
+						self.ability_cost,#thisone
+						self.ability_target,
+						self.current_hp,
+						self.current_location,
+						self.score,
+						self.ability_location,
+						self.is_lobbing,
+						self.is_piercing,
+						self.AOE
+					])
+			elif self.phase == 'MOVE':
+				for j in range(len(row['players'])):
+					for hero in row['players'][j]['heroes']:
+						self.player = j+1
+						self.caster_hero_id = hero['id']
+						self.current_hp = hero['currentHP']
+						self.current_location = hero['currentCell']
+						self.hero_name = hero['type']
+						self.score = row['players'][j]['score']
+						writer.writerow([
+							self.index,
+							self.game_name,
+							self.player,
+							self.caster_hero_id,
+							self.hero_name,
+							self.turn,
+							self.phase,
+							'-',
+							'-',  # thisone
+							'-',
+							self.current_hp,
+							self.current_location,
+							self.score,
+							'-',
+							'-',
+							'-',
+							'-'
+						])
 
 def find_ability_target(AOE,location,data):
 	row = location['row']
