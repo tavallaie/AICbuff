@@ -1,5 +1,4 @@
 import json
-from pprint import pprint
 import pandas as pd
 from pandas.io.json import json_normalize
 from flatten_json import flatten
@@ -12,16 +11,20 @@ class Parser:
         self.gameName = "test"
         self.player = {0: "player1", 1: "player2"}
         self.phase = ""
-        self.constant = self.data[0]
+        self.gameConstants = self.data[0]['gameConstants']
+
+        # print(self.data[0].keys())
+        # self.gameMaps = json_normalize(self.data[0]["map"])
+
 
 
     def flat_export(self, **kwargs):
+        # print(kwargs.keys())
         for key, data in kwargs.items():
-            print(key)
-            print(data)
             data_flatten = [flatten(d) for d in data]
-            df = pd.DataFrame(data_flatten)
-            df.to_csv(key + ".csv")
+        df = pd.DataFrame(data_flatten)
+        df.to_csv(key + ".csv")
+        return df
 
 
 class Constant(Parser):
@@ -59,16 +62,22 @@ class PickedHero(Parser):
 class GamePlay(Parser):
     def __init__(self):
         super(GamePlay, self).__init__()
-        self.currentTurn = 85
-        self.flat_export(castabilities=self.data[self.currentTurn]["castAbilities"])
-        self.flat_export(players= self.data[self.currentTurn]["players"][0]["heroes"])
+        self.Turn = [15, 8]
+        self.castAbility = ""
+        self.player = ""
+        self.make_game_play_great_again()
 
+    def make_game_play_great_again(self):
+        castabilities_list = []
+        for currenturn in self.Turn:
+            turn_castability = self.flat_export(castabilities=self.data[currenturn ]["castAbilities"])
 
-
-
-
-
-
+            turn_castability["turn"] = currenturn
+            castabilities_list.append(turn_castability)
+            self.castAbility = pd.concat(castabilities_list, sort= False)
+            # self.player = self.flat_export(players=self.data[currenturn]["players"][0]["heroes"])
+        print(self.castAbility)
+        self.castAbility.to_csv("castability.csv")
 
 
 if __name__ == "__main__":
