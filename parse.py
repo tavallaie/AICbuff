@@ -106,7 +106,7 @@ def find_ability_target(AOE,location,data):
 			if row+j <=31 and row+j>0:
 				x = find_hero_from_cell(row+j,col,data)
 				if x != None:
-					heroes.append(x)
+					heroes.append((x['type'],x['id']))
 		col += 1
 		if col>location['column']+AOE:
 			break
