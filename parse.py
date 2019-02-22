@@ -24,11 +24,12 @@ class total:
 						 'is_lobbing',
 						 'is_piercing',
 						 'area_effect'])
+		teams = {0:data[0]['gameConstants']['firstTeam'],1:data[0]['gameConstants']['secondTeam']}
+		self.game_name = data[0]['gameConstants']['mapName']
 		#TODO game_type, action, action_ap, move_action, targeted_by, cooldown_per_ability, obj_zone, target_location, is_wall, is_in_respawn_zone
 		for i in range(2, len(data)):
 			row = data[i]
 			self.index = i
-			self.game_name = "game"
 			self.turn = row['currentTurn']
 			self.phase = row['currentPhase']
 			if self.phase == 'ACTION':
@@ -37,16 +38,16 @@ class total:
 					self.AOE = find_ability_property(data[0]['abilityConstants'],self.ability)[0]
 					self.ability_cost = find_ability_property(data[0]['abilityConstants'],self.ability)[3]
 					#TODO underStanding what it is
-					self.ability_location = hero['endCell']
+					self.ability_location = hero['startCell']
 					self.caster_hero_id = hero['casterId']
-					self.player = (self.caster_hero_id%2 +1)
+					self.player = teams[self.caster_hero_id%2]
 					self.score = row['players'][self.caster_hero_id%2]['score']
 					self.hero_name = find_hero_name(data[1]['heroes'][self.caster_hero_id%2],self.caster_hero_id)
 					self.current_hp = find_hp(row['players'][self.caster_hero_id%2]['heroes'],self.caster_hero_id)
 					self.current_location = find_location(row['players'][self.caster_hero_id%2]['heroes'],self.caster_hero_id)
 					self.is_lobbing = find_ability_property(data[0]['abilityConstants'],self.ability)[1]
 					self.is_piercing = find_ability_property(data[0]['abilityConstants'],self.ability)[2]
-					self.ability_target = find_ability_target(self.AOE,self.ability_location,row['players'][self.caster_hero_id%2]['heroes'])
+					self.ability_target = hero['targetHeroIds']
 					writer.writerow([
 						self.index,
 						self.game_name,
@@ -69,10 +70,10 @@ class total:
 			elif self.phase == 'MOVE':
 				for j in range(len(row['players'])):
 					for hero in row['players'][j]['heroes']:
-						self.player = j+1
+						self.player = teams[j]
 						self.caster_hero_id = hero['id']
 						self.current_hp = hero['currentHP']
-						self.current_location = hero['currentCell']
+						self.current_location = hero["currentCell"]
 						self.hero_name = hero['type']
 						self.score = row['players'][j]['score']
 						writer.writerow([
@@ -146,7 +147,7 @@ def find_hp(heroes,id):
 		if hero['id'] == id:
 			return hero['currentHP']
 
-with open('server_view.log') as f:
+with open('logs\server_log_70Kxy5x') as f:
 	data = json.load(f)
 with open('server_view.csv', mode='w') as f:
 	total(data).parse(f)
