@@ -1,6 +1,7 @@
 import json
 import csv
-from pprint import pprint
+from pathlib import Path
+import shutil
 
 
 class total:
@@ -45,8 +46,11 @@ class total:
                     self.score = row['players'][self.caster_hero_id % 2]['score']
                     self.hero_name = find_hero_name(data[1]['heroes'][self.caster_hero_id % 2], self.caster_hero_id)
                     self.current_hp = find_hp(row['players'][self.caster_hero_id % 2]['heroes'], self.caster_hero_id)
-                    self.current_location = find_location(row['players'][self.caster_hero_id % 2]['heroes'],
-                                                          self.caster_hero_id)
+                    try:
+                        self.current_location = find_location(row['players'][self.caster_hero_id % 2]['heroes'],
+                                                              self.caster_hero_id)
+                    except Exception:
+                        pass
                     self.is_lobbing = find_ability_property(data[0]['abilityConstants'], self.ability)[1]
                     self.is_piercing = find_ability_property(data[0]['abilityConstants'], self.ability)[2]
                     self.ability_target = find_ability_target(self.AOE, self.ability_location,
@@ -80,7 +84,7 @@ class total:
                         try:
                             self.current_location = hero['currentCell']
                         except Exception:
-                            pass 
+                            pass
                         self.hero_name = hero['type']
                         self.score = row['players'][j]['score']
                         writer.writerow([
@@ -104,7 +108,6 @@ class total:
                         ])
 
 
-
 def find_ability_target(AOE, location, data):
     row = location['row']
     col = location['column']
@@ -113,7 +116,7 @@ def find_ability_target(AOE, location, data):
     i = 0
     while (True):
         for j in range(i * (-1), i + 1):
-            if 0<row + j <= 31 :
+            if 0 < row + j <= 31:
                 x = find_hero_from_cell(row + j, col, data)
                 if x is not None:
                     heroes.append((x['type'], x['id']))
@@ -162,7 +165,9 @@ def find_hp(heroes, id):
             return hero['currentHP']
 
 
-with open('logs/server_log_FoCbo9y') as f:
-    data = json.load(f)
-with open('server_view.csv', mode='w') as f:
-    total(data).parse(f)
+file = Path("logs/").glob("server_log_*")
+for i in list(file):
+    with open(i) as f:
+        data = json.load(f)
+    with open('%s.csv' % i, mode='w') as f:
+        total(data).parse(f)
