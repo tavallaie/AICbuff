@@ -25,7 +25,14 @@ class total:
 						 'is_piercing',
 						 'area_effect'])
 		teams = {0:data[0]['gameConstants']['firstTeam'],1:data[0]['gameConstants']['secondTeam']}
+		if teams[0] == '':
+			teams[0] = 'team1'
+		if teams[1] == '':
+			teams[1] = 'teams2'
+	 
 		self.game_name = data[0]['gameConstants']['mapName']
+		if self.game_name == '':
+			self.game_name = 'game'
 		#TODO game_type, action, action_ap, move_action, targeted_by, cooldown_per_ability, obj_zone, target_location, is_wall, is_in_respawn_zone
 		for i in range(2, len(data)):
 			row = data[i]
@@ -214,4 +221,3 @@ if __name__ == "__main__":
         data = json.load(f)
     with open('server_view.csv', mode='w') as f:
         _Parser(data).parse(f)
-
